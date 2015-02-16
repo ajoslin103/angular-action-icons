@@ -1,0 +1,13 @@
+{
+  "name": "angular-action-icons",
+  "version": "1.0.0",
+  "main": "angular-action-icons.js",
+  "ignore": [
+    ".jshintrc",
+    "**/*.txt"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
