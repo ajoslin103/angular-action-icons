@@ -137,13 +137,65 @@ there are four kinds of action icons
 	<action-icon-set data-entity-id="42" actions="close;open;radio42"/> 
 
 
+## mix and match
+
+Use them however you want
+
+	$scope.icons = {
+		trash: {
+			name: 'trash',
+			event: 'item.delete', // namespace your events
+			title: 'delete this item',
+			family: 'glyhpicon'
+		},
+		zmIn: {
+			name: 'zoom-in',
+			event: 'item.zoomIn', // namespace your events
+			title: 'zoom in on this item',
+			family: 'glyhpicon'
+		},
+		zmOut: {
+			name: 'zoom-out',
+			event: 'item.zoomOut', // namespace your events
+			title: 'zoom away from this item',
+			family: 'glyhpicon'
+		},
+		silent: {
+			name: 'volume-off',
+			event: 'item.mute', // namespace your events
+			title: 'silence this item',
+			family: 'glyhpicon'
+		},
+		loud: {
+			name: 'volume-up',
+			event: 'item.loud', // namespace your events
+			title: 'hear this item',
+			family: 'glyhpicon'
+		},
+		close: {
+			name: 'lock',
+			event: 'item.write', // namespace your events
+			title: 'save this item',
+			family: 'glyhpicon'
+		},
+		open: {
+			name: 'unlocked',
+			event: 'item.read', // namespace your events
+			title: 'edit this item',
+			family: 'glyhpicon'
+		}
+	}
+	
+	// use a comma to delim between icon groups
+	<action-icon-set data-entity-id="42" actions="trash,zmIn>zmOut,silent:loud:radio42,close;open;radio43"/> 
+
 ## understand it
 
 AngularActionIcons uses the root scope as an application bus.  
 
-It sets your event handler to listen for the events (as defined in your icons structure)
+It sets listeners for all the events you ask for, and emits the events on the $rootScope
 
-It emits your event and a promise on the $rootScope, you resolve or reject it depending upon your success
+If you give it an eventHandler it will call it with the event and the promise
 
 ## install it
 
