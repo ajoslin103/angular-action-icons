@@ -1,6 +1,7 @@
 {
   "name": "angular-action-icons",
-  "version": "1.0.2",
+  "version": "1.0.3",
+  "description": "AngularJS action icons directive that sends click events to your code as promises",
   "main": "./angular-action-icons.js",
   "ignore": [
     ".jshintrc",
@@ -9,5 +10,18 @@
   "dependencies": {
   },
   "devDependencies": {
-  }
+  },
+  "keywords": [
+    "angular",
+    "icons",
+    "events",
+    "action",
+    "radio",
+    "checkbox",
+    "button",
+    "client-side"
+  ],
+  "authors": [ "Allen Joslin <allen.joslin@gmail.com>" ],
+  "license": "MIT",
+  "homepage": "https://github.com/ajoslin103/angular-action-icons"
 }
