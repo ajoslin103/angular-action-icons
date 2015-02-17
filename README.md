@@ -18,7 +18,7 @@ set an icons dataStructure into your scope
 			name: 'trash',				// the icon name
 			event: 'item.delete',		// namespace your events
 			title: 'delete this item',	// the hover title
-			family: 'glyhpicon'			// the icon family
+			family: 'glyphicon'			// the icon family
 		}
 	}
 
@@ -61,7 +61,7 @@ there are four kinds of action icons
 			name: 'trash',
 			event: 'item.delete', // namespace your events
 			title: 'delete this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		}
 	}
 
@@ -76,13 +76,13 @@ there are four kinds of action icons
 			name: 'zoom-in',
 			event: 'item.zoomIn', // namespace your events
 			title: 'zoom in on this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		zmOut: {
 			name: 'zoom-out',
 			event: 'item.zoomOut', // namespace your events
 			title: 'zoom away from this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		}
 	}
 	
@@ -100,13 +100,13 @@ there are four kinds of action icons
 			name: 'volume-off',
 			event: 'item.mute', // namespace your events
 			title: 'silence this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		loud: {
 			name: 'volume-up',
 			event: 'item.loud', // namespace your events
 			title: 'hear this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		}
 	}
 	
@@ -123,13 +123,13 @@ there are four kinds of action icons
 			name: 'lock',
 			event: 'item.write', // namespace your events
 			title: 'save this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		open: {
 			name: 'unlocked',
 			event: 'item.read', // namespace your events
 			title: 'edit this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		}
 	}
 	
@@ -146,43 +146,43 @@ Use them however you want
 			name: 'trash',
 			event: 'item.delete', // namespace your events
 			title: 'delete this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		zmIn: {
 			name: 'zoom-in',
 			event: 'item.zoomIn', // namespace your events
 			title: 'zoom in on this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		zmOut: {
 			name: 'zoom-out',
 			event: 'item.zoomOut', // namespace your events
 			title: 'zoom away from this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		silent: {
 			name: 'volume-off',
 			event: 'item.mute', // namespace your events
 			title: 'silence this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		loud: {
 			name: 'volume-up',
 			event: 'item.loud', // namespace your events
 			title: 'hear this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		close: {
 			name: 'lock',
 			event: 'item.write', // namespace your events
 			title: 'save this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		},
 		open: {
 			name: 'unlocked',
 			event: 'item.read', // namespace your events
 			title: 'edit this item',
-			family: 'glyhpicon'
+			family: 'glyphicon'
 		}
 	}
 	
