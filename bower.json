@@ -1,6 +1,6 @@
 {
   "name": "angular-action-icons",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./angular-action-icons.js",
   "ignore": [
     ".jshintrc",
