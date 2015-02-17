@@ -164,11 +164,12 @@
 
 		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon single-state-icon {{family}} {{className}}"/>';
 
-		function scopeTheIcon (scope,iconInfo) {
+		function scopeTheIcon (scope,iconInfo,iconTag) {
 			scope.name = iconInfo.name;
 			scope.title = iconInfo.title;
 			scope.event = iconInfo.event;
 			scope.family = iconInfo.family;
+			scope.label = (iconTag || iconInfo.name);
 			scope.className = iconInfo.family +'-'+ iconInfo.name;
 		}
 
@@ -177,7 +178,7 @@
 			scope: { itemId: '@' },
 			link: function postLink(scope, element, attrs) {
 				var iconInfo = scope.$parent.icons[attrs.icon];
-				scopeTheIcon(scope,iconInfo);
+				scopeTheIcon(scope,iconInfo,attrs.icon);
 				scope.clicked = function() { 
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
@@ -204,11 +205,12 @@
 
 		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon cycle-state-icon {{family}} {{className}}"/>';
 
-		function scopeTheIcon (scope,iconInfo) {
+		function scopeTheIcon (scope,iconInfo,iconTag) {
 			scope.name = iconInfo.name;
 			scope.title = iconInfo.title;
 			scope.event = iconInfo.event;
 			scope.family = iconInfo.family;
+			scope.label = (iconTag || iconInfo.name);
 			scope.className = iconInfo.family +'-'+ iconInfo.name;
 		}
 
@@ -218,16 +220,17 @@
 			link: function postLink(scope, element, attrs) {
 				var actionIconList = attrs.icon.split(actionIcons.getCycleDelim());
 				var iconInfo = scope.$parent.icons[actionIconList[0]];
-				scopeTheIcon(scope,iconInfo);
+				scopeTheIcon(scope,iconInfo,actionIconList[0]);
 				scope.clicked = function() { 
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
 							function(data){ // resolved, action was successful
 								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
 								// move on to the next icon in the series
-								var actionIconNdx = actionIconList.indexOf(scope.name);
-								iconInfo = scope.$parent.icons[actionIconList[ (actionIconNdx+1)%actionIconList.length ]];
-								scopeTheIcon(scope,iconInfo);
+								var actionIconNdx = actionIconList.indexOf(scope.label);
+								actionIconNdx = (actionIconNdx+1)%actionIconList.length;
+								iconInfo = scope.$parent.icons[actionIconList[actionIconNdx]];
+								scopeTheIcon(scope,iconInfo,actionIconList[actionIconNdx]);
 							},
 							function(err){ // rejected, action was NOT successful
 								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
@@ -249,12 +252,13 @@
 
 		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
 
-		function scopeTheIcon (scope,iconInfo,_clas) {
+		function scopeTheIcon (scope,iconInfo,_clas,iconTag) {
 			scope.clas = _clas;
 			scope.name = iconInfo.name;
 			scope.title = iconInfo.title;
 			scope.event = iconInfo.event;
 			scope.family = iconInfo.family;
+			scope.label = (iconTag || iconInfo.name);
 			scope.className = iconInfo.family +'-'+ iconInfo.name;
 		}
 
@@ -263,7 +267,7 @@
 			scope: { itemId: '@' },
 			link: function postLink(scope, element, attrs) {
 				var actionIconList = attrs.icon.split(actionIcons.getRadioDelim());
-				scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]]); // show the off icon to start
+				scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); // show the off icon to start
 				scope.clicked = function() { 
 					// if we clicked on one that is on 
 					if (scope.radioIsOn) {
@@ -288,7 +292,7 @@
 											console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
 											// so change to the off icon
 											scope.radioIsOn = false;
-											scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]]); 
+											scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); 
 											// if the one we turned off is not the one we want to turn on
 											if (theOnScope.itemId !== scope.itemId) {
 												// then turn on the one they clicked on
@@ -298,7 +302,7 @@
 															console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 															// change to the on icon
 															scope.radioIsOn = true;
-															scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass]);
+															scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 															// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 															delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 														},
@@ -343,7 +347,7 @@
 												console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 												// change to the on icon
 												scope.radioIsOn = true;
-												scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass]);
+												scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 												// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 												delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 											},
@@ -375,12 +379,13 @@
 
 		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
 
-		function scopeTheIcon (scope,iconInfo,_clas) {
+		function scopeTheIcon (scope,iconInfo,_clas,iconTag) {
 			scope.clas = _clas;
 			scope.name = iconInfo.name;
 			scope.title = iconInfo.title;
 			scope.event = iconInfo.event;
 			scope.family = iconInfo.family;
+			scope.label = (iconTag || iconInfo.name);
 			scope.className = iconInfo.family +'-'+ iconInfo.name;
 		}
 
@@ -389,7 +394,7 @@
 			scope: { itemId: '@' },
 			link: function postLink(scope, element, attrs) {
 				var actionIconList = attrs.icon.split(actionIcons.getRadioOffDelim());
-				scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]]); // show the off icon to start
+				scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); // show the off icon to start
 				scope.clicked = function() { 
 					// if any one of these radio-offs [by class] is in motion, 
 					if (actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]]) {
@@ -408,7 +413,7 @@
 									function(data){ // resolved, action was successful
 										console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
 										// so change to the off icon
-										scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]]); 
+										scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); 
 										// if the one we turned off is not the one we want to turn on
 										if (theOnScope.itemId !== scope.itemId) {
 											// then turn on the one they clicked on
@@ -417,7 +422,7 @@
 													function(data){ // resolved, action was successful
 														console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 														// change to the on icon
-														scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass]);
+														scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 													},
@@ -461,7 +466,7 @@
 										function(data){ // resolved, action was successful
 											console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 											// change to the on icon
-											scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass]);
+											scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										},
