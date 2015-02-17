@@ -49,6 +49,22 @@
 			registeredActionIconEventHandler(event,promise);
 		}
 
+		// default logging function - echo to console
+		function defaultLogResultFn (tag,msg) {
+			console.log(tag,msg);
+		}
+
+		// accept a replacement for the default logging function
+		var registeredLogResultFn = defaultLogResultFn;
+		function registerLogResultFn (newLogResultFn) {
+			registeredLogResultFn = newLogResultFn;
+		}
+
+		// pass the work to the logical side
+		function logTheResult (tag,msg) {
+			registeredLogResultFn(tag,msg);
+		}
+
 		// name the icon
 		function nameTheIcon (event, id) {
 			var eventParts = event.split('.');
@@ -119,6 +135,7 @@
 			addActionIconCycle: addActionIconCycle,
 			addActionIconRadio: addActionIconRadio,
 			addActionIconRadioOff: addActionIconRadioOff,
+			registerLogResultFn: registerLogResultFn,
 			getGroupDelim: getGroupDelim,
 			getCycleDelim: getCycleDelim,
 			getRadioDelim: getRadioDelim,
@@ -127,7 +144,8 @@
 			iconOffNdx: iconOffNdx,
 			iconOnNdx: iconOnNdx,
 			iconOnClass: iconOnClass,
-			radiosInMotion: radiosInMotion
+			radiosInMotion: radiosInMotion,
+			logTheResult: logTheResult,
 		};
 		
 	}
@@ -183,13 +201,13 @@
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
 							function(data){ // resolved, action was successful
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
 							},
 							function(err){ // rejected, action was NOT successful
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
 							},
 							function(msg){ // notification, action had something to say
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
 							}
 						);
 				};
@@ -225,7 +243,7 @@
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
 							function(data){ // resolved, action was successful
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
 								// move on to the next icon in the series
 								var actionIconNdx = actionIconList.indexOf(scope.label);
 								actionIconNdx = (actionIconNdx+1)%actionIconList.length;
@@ -233,10 +251,10 @@
 								scopeTheIcon(scope,iconInfo,actionIconList[actionIconNdx]);
 							},
 							function(err){ // rejected, action was NOT successful
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
 							},
 							function(msg){ // notification, action had something to say
-								console.log(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
+								actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
 							}
 						);
 				};
@@ -272,12 +290,12 @@
 					// if we clicked on one that is on 
 					if (scope.radioIsOn) {
 						// then bail - you can't turn off a radio icon
-						console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
+						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
 					} else {
 						// if any one of these radios [by class] is in motion, 
 						if (actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]]) {
 							// then bail
-							console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, already processing an event for this group');
+							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, already processing an event for this group');
 						} else {
 							// set up a blocker while we process this click, we don't want any interleaved actions
 							actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]] = new Date().getTime();
@@ -289,7 +307,7 @@
 								actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.itemId)
 									.then(
 										function(data){ // resolved, action was successful
-											console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
+											actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
 											// so change to the off icon
 											scope.radioIsOn = false;
 											scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); 
@@ -299,7 +317,7 @@
 												actionIcons.emitActionIconEvent(scope.event,scope.itemId)
 													.then(
 														function(data){ // resolved, action was successful
-															console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
+															actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 															// change to the on icon
 															scope.radioIsOn = true;
 															scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
@@ -307,12 +325,12 @@
 															delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 														},
 														function(err){ // rejected, action was NOT successful
-															console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
+															actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
 															// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 															delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 														},
 														function(msg){ // notification, action had something to say
-															console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
+															actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
 															// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 															delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 														}
@@ -326,12 +344,12 @@
 
 										},
 										function(err){ // rejected, action was NOT successful
-											console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'failed error: '+(err || '[none reported]'));
+											actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'failed error: '+(err || '[none reported]'));
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										},
 										function(msg){ // notification, action had something to say
-											console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'notification: '+msg);
+											actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'notification: '+msg);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										}
@@ -344,7 +362,7 @@
 									actionIcons.emitActionIconEvent(scope.event,scope.itemId)
 										.then(
 											function(data){ // resolved, action was successful
-												console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
+												actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 												// change to the on icon
 												scope.radioIsOn = true;
 												scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
@@ -352,12 +370,12 @@
 												delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 											},
 											function(err){ // rejected, action was NOT successful
-												console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
+												actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
 												// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 												delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 											},
 											function(msg){ // notification, action had something to say
-												console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
+												actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
 												// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 												delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 											}
@@ -399,7 +417,7 @@
 					// if any one of these radio-offs [by class] is in motion, 
 					if (actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]]) {
 						// then bail
-						console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, already processing an event for this group');
+						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'discarded, already processing an event for this group');
 					} else {
 						// set up a blocker while we process this click, we don't want any interleaved actions
 						actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]] = new Date().getTime();
@@ -411,7 +429,7 @@
 							actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.itemId)
 								.then(
 									function(data){ // resolved, action was successful
-										console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
+										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'success data: '+(data || '[none returned]'));
 										// so change to the off icon
 										scopeTheIcon(theOnScope,scope.$parent.icons[actionIconList[actionIcons.iconOffNdx]],'',actionIconList[actionIcons.iconOffNdx]); 
 										// if the one we turned off is not the one we want to turn on
@@ -420,19 +438,19 @@
 											actionIcons.emitActionIconEvent(scope.event,scope.itemId)
 												.then(
 													function(data){ // resolved, action was successful
-														console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
+														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 														// change to the on icon
 														scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 													},
 													function(err){ // rejected, action was NOT successful
-														console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
+														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 													},
 													function(msg){ // notification, action had something to say
-														console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
+														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 													}
@@ -446,12 +464,12 @@
 
 									},
 									function(err){ // rejected, action was NOT successful
-										console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'failed error: '+(err || '[none reported]'));
+										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'failed error: '+(err || '[none reported]'));
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 									},
 									function(msg){ // notification, action had something to say
-										console.log(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'notification: '+msg);
+										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.itemId),'notification: '+msg);
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 									}
@@ -464,19 +482,19 @@
 								actionIcons.emitActionIconEvent(scope.event,scope.itemId)
 									.then(
 										function(data){ // resolved, action was successful
-											console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
+											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'success data: '+(data || '[none returned]'));
 											// change to the on icon
 											scopeTheIcon(scope,scope.$parent.icons[actionIconList[actionIcons.iconOnNdx]],actionIconList[actionIcons.iconOnClass],actionIconList[actionIcons.iconOnNdx]);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										},
 										function(err){ // rejected, action was NOT successful
-											console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
+											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'failed error: '+(err || '[none reported]'));
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										},
 										function(msg){ // notification, action had something to say
-											console.log(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
+											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.itemId),'notification: '+msg);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[actionIconList[actionIcons.iconOnClass]];
 										}
