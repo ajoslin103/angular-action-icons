@@ -12,7 +12,7 @@
 			deferred.id = id;
 			setTimeout(function() {
 				$rootScope.$emit(evt,deferred); 
-			}, 1000);
+			}, 1);
 			return deferred.promise;
 		}
 
