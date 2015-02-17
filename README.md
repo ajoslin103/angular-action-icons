@@ -50,6 +50,20 @@ watch the console when you click on it
 
 	delete item #42 success data: entityAdmin resolved:delete item #42
 	
+## watch it
+
+add your own promise logging so that you can keep track of interal results
+
+define your own logging Fn
+
+	function showResult (tag,msg) { // just display it for now...
+		angular.element('#iconResult').text(tag+msg);
+	}
+
+ask the angularActionIcons service actionIcons to call it
+
+	actionIcons.registerLogResultFn(showResult);
+
 ## want more ?
 
 there are four kinds of action icons
@@ -120,15 +134,15 @@ there are four kinds of action icons
 
 	$scope.icons = {
 		close: {
-			name: 'lock',
+			name: 'eye-close',
 			event: 'item.write', // namespace your events
-			title: 'save this item',
+			title: 'stop watching this item',
 			family: 'glyphicon'
 		},
 		open: {
-			name: 'unlocked',
+			name: 'eye-open',
 			event: 'item.read', // namespace your events
-			title: 'edit this item',
+			title: 'watch this item',
 			family: 'glyphicon'
 		}
 	}
@@ -173,15 +187,15 @@ Use them however you want
 			family: 'glyphicon'
 		},
 		close: {
-			name: 'lock',
+			name: 'eye-close',
 			event: 'item.write', // namespace your events
-			title: 'save this item',
+			title: 'stop watching this item',
 			family: 'glyphicon'
 		},
 		open: {
-			name: 'unlocked',
+			name: 'eye-open',
 			event: 'item.read', // namespace your events
-			title: 'edit this item',
+			title: 'watch this item',
 			family: 'glyphicon'
 		}
 	}
