@@ -88,7 +88,13 @@
 
 		// add a cycling set, the first one will be the default
 		function addActionIconCycle() {
-			return arguments.join(getCycleDelim());
+			var names = [];
+			for (var e in arguments) {
+				if (arguments.hasOwnProperty(e)) {
+					names.push(arguments[e]);
+				}
+			}
+			return names.join(getCycleDelim());
 		}
 
 		// add a radio button icon set, default will be off -- adds a class to find the one's that are on
