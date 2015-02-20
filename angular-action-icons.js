@@ -16,6 +16,29 @@
 			return deferred.promise;
 		}
 
+		// dynamically add a style rule to the page
+		function injectStyles(rule,id) {
+			$('<div />', { html: '&shy;<style id="'+id+'">' + rule + '</style>' })
+				.appendTo('body');    
+		}
+
+		// remove our hover styles
+		function removeHoverStyles(){
+			$('#actionIconHoverStyle').remove(); 
+		}
+
+		// add our hover styles, only once
+		function addHoverStyles(){
+			if (! $('#actionIconHoverStyle').length) {
+				if ((typeof document.body.style.filter !== 'undefined') && 
+					(typeof document.body.style.webkitFilter !== 'undefined')) {
+					injectStyles('.action-icon:hover { filter: invert(100%); -webkit-filter: invert(100%); }','actionIconHoverStyle'); 
+				} else {
+					injectStyles('.action-icon:hover { color: white; background-color: black; }','actionIconHoverStyle'); 
+				}
+			}
+		}
+
 		// bottleneck all the events we are given to one handler
 		var actionIconListeners = {};
 		function listenToTheseActionIcons (iconInfoList) {
@@ -27,6 +50,7 @@
 					}
 				}
 			}
+			addHoverStyles();
 		}
 
 		// default actionIconHandler echo to console, reject 25% of the time
