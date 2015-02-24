@@ -213,6 +213,4 @@ If you give it an eventHandler it will call it with the event and the promise
 
 ## install it
 
-this is coming soon!
-
 	bower install --save angular-action-icons   
