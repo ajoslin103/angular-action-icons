@@ -1,5 +1,8 @@
 # angular-action-icons
+
 AngularJS action icons directive that sends click events to your code as promises 
+
+(See the end of this Read Me for the change log)
 
 ## see it
 
@@ -22,7 +25,7 @@ set an icons dataStructure into your scope
 		}
 	}
 
-tell angularActionIcons service actionIcons service about any icons you want to track
+tell the angularActionIcons service actionIcons service about any icons you want to track
 
 	actionIcons.listenToTheseActionIcons($scope.icons);
 
@@ -211,8 +214,29 @@ It sets listeners for all the events you ask for, and emits the events on the $r
 
 If you give it an eventHandler it will call it with the event and the promise
 
+## set them
+
+Add an data-entity-type to your action icon sets -- this action will NOT emit actionIconEvents
+
+	<action-icon-set data-entity-type="volume" data-entity-id="42" actions="silent:loud:radio42"/> 
+	<action-icon-set data-entity-type="volume" data-entity-id="142" actions="silent:loud:radio42"/> 
+	<action-icon-set data-entity-type="volume" data-entity-id="242" actions="silent:loud:radio42"/> 
+
+	<action-icon-set data-entity-type="access" data-entity-id="43" actions="close;open;radio43"/> 
+	<action-icon-set data-entity-type="access" data-entity-id="143" actions="close;open;radio43"/> 
+	<action-icon-set data-entity-type="access" data-entity-id="243" actions="close;open;radio43"/> 
+
+Call actionIcons.setIcon( 'volume' , 'silent' ,[ 42, 142,242 ]) -- to turn all volume's to silent
+
+Call actionIcons.setIcon( 'access' , 'close' ,[ 143 ]) -- to close access to 143
+
+
 ## install it
 
-this is coming soon!
-
 	bower install --save angular-action-icons   
+	
+## change log
+
+	1.2.0	- added actionIcons.setIcon() to allow you to set the icons to a desired state
+			- changed attribute data-item-id to data-entity-id
+			- added attribute data-entity-type
