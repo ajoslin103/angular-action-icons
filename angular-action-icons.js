@@ -325,6 +325,7 @@
 			controller: actionIconDirectiveControllerFn,
 			link: function postLink(scope, element, attrs, myController) {
 				scope.aiIconType = 'actionIconSingleState';
+				scope.controller = myController;
 				scope.clicked = function() { 
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
@@ -358,6 +359,7 @@
 			controller: actionIconDirectiveControllerFn,
 			link: function postLink(scope, element, attrs, myController) {
 				scope.aiIconType = 'actionIconCycleState';
+				scope.controller = myController;
 				scope.clicked = function() { 
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
@@ -392,6 +394,7 @@
 			controller: actionIconDirectiveControllerFn,
 			link: function postLink(scope, element, attrs, myController) {
 				scope.aiIconType = 'actionIconRadioState';
+				scope.controller = myController;
 				scope.clicked = function() { 
 					// if we clicked on one that is on 
 					if (scope.radioIsOn) {
@@ -415,8 +418,8 @@
 										function(data){ // resolved, action was successful
 											actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
 											// so change to the off icon
-											scope.radioIsOn = false;
-											myController.setMyIcon(actionIcons.iconOffNdx);
+											theOnScope.radioIsOn = false;
+											theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 											// if the one we turned off is not the one we want to turn on
 											if (theOnScope.aiItemId !== scope.aiItemId) {
 												// then turn on the one they clicked on
@@ -510,6 +513,7 @@
 			controller: actionIconDirectiveControllerFn,
 			link: function postLink(scope, element, attrs, myController) {
 				scope.aiIconType = 'actionIconRadioStateOff';
+				scope.controller = myController;
 				scope.clicked = function() { 
 					// if any one of these radio-offs [by class] is in motion, 
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
@@ -528,7 +532,7 @@
 									function(data){ // resolved, action was successful
 										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
 										// so change to the off icon
-										myController.setMyIcon(actionIcons.iconOffNdx);
+										theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 										// if the one we turned off is not the one we want to turn on
 										if (theOnScope.aiItemId !== scope.aiItemId) {
 											// then turn on the one they clicked on

@@ -234,9 +234,12 @@ Call actionIcons.setIcon( 'access' , 'close' ,[ 143 ]) -- to close access to 143
 ## install it
 
 	bower install --save angular-action-icons   
+<<<<<<< HEAD
 	
 ## change log
 
 	1.2.0	- added actionIcons.setIcon() to allow you to set the icons to a desired state
 			- changed attribute data-item-id to data-entity-id
 			- added attribute data-entity-type
+=======
+>>>>>>> e36d2ffa96dbd4f69f30a69e1866dab77acb943d
