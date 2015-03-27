@@ -30,6 +30,13 @@
 			}, 1);
 		}
 
+		// tell a list of controllers to set their icons
+		function SetControlledIcons( controllerArray, desiredTag ){ 
+			for (var ndx=0; ndx < controllerArray.length; ndx++) {
+				controllerArray[ndx].setMyIcon(desiredTag);
+			}
+		}
+
 		// we listen for requests to change icons
 		var actionIconControls = {};
 		function listenForControl(directiveController){ 
@@ -41,13 +48,25 @@
 				actionIconControls[iconControlEvent].itemType = itemType;
 				actionIconControls[iconControlEvent].controllerList = {};
 				actionIconControls[iconControlEvent].listener = $rootScope.$on(iconControlEvent, function(evt,envelope) {
-					for (var x=0; x<envelope.ids.length; x++) {
-						var controller = actionIconControls[iconControlEvent].controllerList[itemId];
-						controller.setMyIcon(envelope.tag);
+					if (envelope.ids === '*') {
+						for (var iconNdx in actionIconControls[iconControlEvent].controllerList) {
+							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(iconNdx)) {
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope.tag);
+							}
+						}
+					} else {
+						for (var ndx=0; ndx<envelope.ids.length; ndx++) {
+							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(envelope.ids[ndx])) {
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope.tag);
+							}
+						}
 					}
 				});
 			}
-			actionIconControls[iconControlEvent].controllerList[itemId] = directiveController; // and by entityId
+			if (! actionIconControls[iconControlEvent].controllerList.hasOwnProperty(itemId)) {
+				actionIconControls[iconControlEvent].controllerList[itemId] = [];
+			}
+			actionIconControls[iconControlEvent].controllerList[itemId].push(directiveController); // and by entityId
 		}
 
 		// in response to an actionIcon click, emit an event on the rootscope
@@ -69,11 +88,6 @@
 			angular.element('<div />', { html: '&shy;<style id="'+id+'">' + rule + '</style>' })
 				.appendTo('body');    
 		}
-
-		// remove our hover styles
-		// function removeHoverStyles(){
-		// 	$('#actionIconHoverStyle').remove(); 
-		// }
 
 		// add our hover styles, only once
 		function addHoverStyles(){
@@ -101,13 +115,9 @@
 			addHoverStyles();
 		}
 
-		// default actionIconHandler echo to console, reject 25% of the time
+		// default actionIconHandler resolve
 		function defaultActionIconEventHandler (event, promise) {
-			// if (Math.random() > 0.25) {
-				promise.resolve('[defaultActionIconEventHandler] resolved '+nameTheIcon(promise.event,promise.id));
-			// } else {
-			// 	promise.reject('[defaultActionIconEventHandler] rejected '+nameTheIcon(promise.event,promise.id));
-			// }
+			promise.resolve('[defaultActionIconEventHandler] resolved '+nameTheIcon(promise.event,promise.id));
 		}
 
 		// accept a replacement for the default event handler (should be a list of handlers)
@@ -264,7 +274,7 @@
 		};
 	}
 
-	function actionIconDirectiveControllerFn ($scope, $element, actionIcons) { 
+	function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIcons) { 
 
 		$scope.aiIconInfos = {};
 		$scope.aiItemId = $element.attr('data-item-id');
@@ -297,6 +307,7 @@
 				$scope.family = $scope.aiIconInfos[allegedTag].family;
 				$scope.label = (allegedTag || $scope.aiIconInfos[allegedTag].name);
 				$scope.className = $scope.aiIconInfos[allegedTag].family +'-'+ $scope.aiIconInfos[allegedTag].name;
+				$rootScope.$$phase || $rootScope.$apply(); // apply changes if we are not already doing so
 			}
 		};
 

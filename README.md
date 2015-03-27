@@ -237,6 +237,8 @@ Call actionIcons.setIcon( 'access' , 'close' ,[ 143 ]) -- to close access to 143
 	
 ## change log
 
+	1.2.2	- bugfix in evented setMyIcon to show icon changes 
+
 	1.2.1	- bugfix in radio icon logic
 
 	1.2.0	- added actionIcons.setIcon() to allow you to set the icons to a desired state
