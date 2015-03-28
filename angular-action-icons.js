@@ -184,7 +184,7 @@
 			var options = [];
 			options.push(off);
 			options.push(on);
-			clas = clas || Math.random(); //uuid.v4().replace('-',''); // default to a compact uuid
+			clas = clas || Math.floor(1000000 * Math.random()); //uuid.v4().replace('-',''); // default to a compact uuid
 			options.push(clas);
 			return options.join(getRadioDelim());
 		}
@@ -194,7 +194,7 @@
 			var options = [];
 			options.push(off);
 			options.push(on);
-			clas = clas || Math.random(); //uuid.v4().replace('-',''); // default to a compact uuid
+			clas = clas || Math.floor(1000000 * Math.random()); //uuid.v4().replace('-',''); // default to a compact uuid
 			options.push(clas);
 			return options.join(getRadioOffDelim());
 		}
@@ -292,14 +292,34 @@
 			this.setMyIcon(actionIconNdx);
 		};
 
-		this.setMyIcon = function(allegedTagOrNdx, _groupOnClas){ // jshint ignore:line
-			 _groupOnClas = ( _groupOnClas || '' );
+		this.hasOnClass = function(){ // jshint ignore:line
+			if (scope.aiIconType.indexOf('Radio') !== -1) {
+				if ($scope.aiIconTagList.length > (actionIcons.iconOnClass)) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		this.getOnClassForTagOrNdx = function(allegedTagOrNdx){ // jshint ignore:line
+			if (this.hasOnClass) {
+				if (! isFinite(allegedTagOrNdx)) { // force to an Ndx
+					allegedTagOrNdx = $scope.aiIconTagList.indexOf(allegedTagOrNdx);
+				}
+				if (allegedTagOrNdx === actionIcons.iconOnNdx) {
+					return $scope.aiIconTagList[actionIcons.iconOnClass];
+				}
+			}
+			return '';
+		};
+
+		this.setMyIcon = function(allegedTagOrNdx){ // jshint ignore:line
 			var allegedTag = allegedTagOrNdx;
 			if (isFinite(allegedTagOrNdx)) { 
 				allegedTag = $scope.aiIconTagList[allegedTagOrNdx];
 			}
 			if ($scope.aiIconInfos.hasOwnProperty((allegedTag))) {
-				$scope.clas = _groupOnClas;
+				$scope.clas = this.getOnClassForTagOrNdx(allegedTagOrNdx);
 				$scope.aiCurrentTag = allegedTag;
 				$scope.name = $scope.aiIconInfos[allegedTag].name;
 				$scope.title = $scope.aiIconInfos[allegedTag].title;
@@ -408,7 +428,7 @@
 				scope.controller = myController;
 				scope.clicked = function() { 
 					// if we clicked on one that is on 
-					if (scope.radioIsOn) {
+					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) == actionIcons.iconOnNdx) { 
 						// then bail - you can't turn off a radio icon
 						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
 					} else {
@@ -429,7 +449,6 @@
 										function(data){ // resolved, action was successful
 											actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
 											// so change to the off icon
-											theOnScope.radioIsOn = false;
 											theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 											// if the one we turned off is not the one we want to turn on
 											if (theOnScope.aiItemId !== scope.aiItemId) {
@@ -439,8 +458,7 @@
 														function(data){ // resolved, action was successful
 															actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
 															// change to the on icon
-															scope.radioIsOn = true;
-															myController.setMyIcon(actionIcons.iconOnNdx,scope.aiIconTagList[actionIcons.iconOnClass]);
+															myController.setMyIcon(actionIcons.iconOnNdx);
 															// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 															delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 														},
@@ -484,8 +502,7 @@
 											function(data){ // resolved, action was successful
 												actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
 												// change to the on icon
-												scope.radioIsOn = true;
-												myController.setMyIcon(actionIcons.iconOnNdx,scope.aiIconTagList[actionIcons.iconOnClass]);
+												myController.setMyIcon(actionIcons.iconOnNdx);
 												// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 												delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 											},
@@ -552,7 +569,7 @@
 													function(data){ // resolved, action was successful
 														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
 														// change to the on icon
-														myController.setMyIcon(actionIcons.iconOnNdx,scope.aiIconTagList[actionIcons.iconOnClass]);
+														myController.setMyIcon(actionIcons.iconOnNdx);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 													},
@@ -596,7 +613,7 @@
 										function(data){ // resolved, action was successful
 											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
 											// change to the on icon
-											myController.setMyIcon(actionIcons.iconOnNdx,scope.aiIconTagList[actionIcons.iconOnClass]);
+											myController.setMyIcon(actionIcons.iconOnNdx);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 										},
