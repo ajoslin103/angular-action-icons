@@ -51,16 +51,17 @@
 					if (envelope.ids === '*') {
 						for (var iconNdx in actionIconControls[iconControlEvent].controllerList) {
 							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(iconNdx)) {
-								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope.tag);
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope.tag);  // jshint ignore:line
 							}
 						}
 					} else {
 						for (var ndx=0; ndx<envelope.ids.length; ndx++) {
 							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(envelope.ids[ndx])) {
-								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope.tag);
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope.tag);  // jshint ignore:line
 							}
 						}
 					}
+					$rootScope.$apply();
 				});
 			}
 			if (! actionIconControls[iconControlEvent].controllerList.hasOwnProperty(itemId)) {
@@ -293,7 +294,7 @@
 		};
 
 		this.hasOnClass = function(){ // jshint ignore:line
-			if (scope.aiIconType.indexOf('Radio') !== -1) {
+			if ($scope.aiIconType.indexOf('Radio') !== -1) {
 				if ($scope.aiIconTagList.length > (actionIcons.iconOnClass)) {
 					return true;
 				}
@@ -320,14 +321,14 @@
 			}
 			if ($scope.aiIconInfos.hasOwnProperty((allegedTag))) {
 				$scope.clas = this.getOnClassForTagOrNdx(allegedTagOrNdx);
+				$scope.label = allegedTag;
 				$scope.aiCurrentTag = allegedTag;
 				$scope.name = $scope.aiIconInfos[allegedTag].name;
 				$scope.title = $scope.aiIconInfos[allegedTag].title;
 				$scope.event = $scope.aiIconInfos[allegedTag].event;
 				$scope.family = $scope.aiIconInfos[allegedTag].family;
-				$scope.label = (allegedTag || $scope.aiIconInfos[allegedTag].name);
 				$scope.className = $scope.aiIconInfos[allegedTag].family +'-'+ $scope.aiIconInfos[allegedTag].name;
-				$rootScope.$$phase || $rootScope.$apply(); // apply changes if we are not already doing so
+				// $rootScope.$$phase || $rootScope.$apply(); // apply changes if we are not already doing so
 			}
 		};
 
@@ -428,7 +429,7 @@
 				scope.controller = myController;
 				scope.clicked = function() { 
 					// if we clicked on one that is on 
-					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) == actionIcons.iconOnNdx) { 
+					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
 						// then bail - you can't turn off a radio icon
 						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
 					} else {
@@ -648,4 +649,5 @@ angular.module('angularActionIcons', [])
 	.directive('actionIconCycleState', [ '$compile', '$rootScope', 'actionIcons', actionIconCycleStateDirectiveFn ])
 	.directive('actionIconRadioState', [ '$compile', '$rootScope', 'actionIcons', actionIconRadioStateDirectiveFn ])
 	.directive('actionIconRadioOffState', [ '$compile', '$rootScope', 'actionIcons', actionIconRadioStateOffDirectiveFn ])
+	.controller('actionIconDirectiveCtrl', actionIconDirectiveControllerFn)
 	;
