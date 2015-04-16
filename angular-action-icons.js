@@ -2,6 +2,7 @@
 
 	function actionIconServiceFn ($q, $rootScope) {
 
+
 		/*
 			eventing
 
@@ -19,6 +20,18 @@
 		*/
 
 		// call for icons to be changed
+		function enableIcon (_iconType, _enabled, _idList) {
+			var envelope = { 
+				typ: _iconType, 
+				enable: _enabled, 
+				ids: _idList 
+			};
+			setTimeout(function() {
+				$rootScope.$emit(controlEventPrefix()+_iconType,envelope); 
+			}, 1);
+		}
+
+		// call for icons to be changed
 		function setIcon (_iconType, _iconTag, _idList) {
 			var envelope = { 
 				typ: _iconType, 
@@ -31,9 +44,16 @@
 		}
 
 		// tell a list of controllers to set their icons
-		function SetControlledIcons( controllerArray, desiredTag ){ 
+		function SetControlledIcons( controllerArray, envelope ){ 
+			var tagging = envelope.hasOwnProperty('tag');
+			var enabling = envelope.hasOwnProperty('enable');
 			for (var ndx=0; ndx < controllerArray.length; ndx++) {
-				controllerArray[ndx].setMyIcon(desiredTag);
+				if (tagging) {
+					controllerArray[ndx].setMyIcon(envelope.tag);
+				}
+				if (enabling) {
+					controllerArray[ndx].enableMyIcon(envelope.enable);
+				}
 			}
 		}
 
@@ -51,13 +71,13 @@
 					if (envelope.ids === '*') {
 						for (var iconNdx in actionIconControls[iconControlEvent].controllerList) {
 							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(iconNdx)) {
-								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope.tag);  // jshint ignore:line
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope);  // jshint ignore:line
 							}
 						}
 					} else {
 						for (var ndx=0; ndx<envelope.ids.length; ndx++) {
 							if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(envelope.ids[ndx])) {
-								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope.tag);  // jshint ignore:line
+								SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope);  // jshint ignore:line
 							}
 						}
 					}
@@ -96,8 +116,10 @@
 				if ((typeof document.body.style.filter !== 'undefined') && 
 					(typeof document.body.style.webkitFilter !== 'undefined')) {
 					injectStyles('.action-icon:hover { filter: invert(100%); -webkit-filter: invert(100%); }','actionIconHoverStyle'); 
+					injectStyles('.action-icon.disabled { filter: invert(100%); -webkit-filter: invert(100%) !important; }','actionIconDisabledStyle'); 
 				} else {
 					injectStyles('.action-icon:hover { color: white; background-color: black; }','actionIconHoverStyle'); 
+					injectStyles('.action-icon:disabled { color: white; background-color: black !important; }','actionIconDisabledStyle'); 
 				}
 			}
 		}
@@ -241,6 +263,7 @@
 			logTheResult: logTheResult,
 			listenForControl: listenForControl,
 			setIcon: setIcon,
+			enableIcon: enableIcon,
 			controlEventPrefix: controlEventPrefix,
 			getIconDelimRegEx: getIconDelimRegEx,
 		};
@@ -282,6 +305,7 @@
 		$scope.aiItemType = $element.attr('data-item-type'); 
 		$scope.aiItemClump = $element.attr('data-icon'); 
 		$scope.aiIconTagList = $scope.aiItemClump.split(actionIcons.getIconDelimRegEx());
+
 		for (var ndx = 0; ndx < $scope.aiIconTagList.length; ndx++) {
 			var eachTag = $scope.aiIconTagList[ndx];
 			$scope.aiIconInfos[eachTag] = $scope.$parent.icons[eachTag];
@@ -328,7 +352,15 @@
 				$scope.event = $scope.aiIconInfos[allegedTag].event;
 				$scope.family = $scope.aiIconInfos[allegedTag].family;
 				$scope.className = $scope.aiIconInfos[allegedTag].family +'-'+ $scope.aiIconInfos[allegedTag].name;
-				// $rootScope.$$phase || $rootScope.$apply(); // apply changes if we are not already doing so
+			}
+		};
+
+		this.enableMyIcon = function(enableIcon){ // jshint ignore:line
+			$scope.enabled = enableIcon;
+			if ($scope.enabled) {
+				$scope.disabled = '';
+			} else {
+				$scope.disabled = 'disabled';
 			}
 		};
 
@@ -345,11 +377,13 @@
 		};
 
 		this.setMyIcon(actionIcons.iconOffNdx); // jshint ignore:line
+
+		this.enableMyIcon(true); // jshint ignore:line
 	}
 
 	function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon single-state-icon {{family}} {{className}}"/>';
+		var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon single-state-icon {{family}} {{className}} {{disabled}}"/>';
 
 		return {
 			restrict: 'EA',
@@ -359,6 +393,7 @@
 				scope.aiIconType = 'actionIconSingleState';
 				scope.controller = myController;
 				scope.clicked = function() { 
+					if (! scope.enabled) { return; }
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
 							function(data){ // resolved, action was successful
@@ -393,6 +428,7 @@
 				scope.aiIconType = 'actionIconCycleState';
 				scope.controller = myController;
 				scope.clicked = function() { 
+					if (! scope.enabled) { return; }
 					actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 						.then(
 							function(data){ // resolved, action was successful
@@ -428,6 +464,7 @@
 				scope.aiIconType = 'actionIconRadioState';
 				scope.controller = myController;
 				scope.clicked = function() { 
+					if (! scope.enabled) { return; }
 					// if we clicked on one that is on 
 					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
 						// then bail - you can't turn off a radio icon
@@ -544,6 +581,7 @@
 				scope.aiIconType = 'actionIconRadioStateOff';
 				scope.controller = myController;
 				scope.clicked = function() { 
+					if (! scope.enabled) { return; }
 					// if any one of these radio-offs [by class] is in motion, 
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 						// then bail

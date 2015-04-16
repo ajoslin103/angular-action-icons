@@ -237,6 +237,8 @@ Call actionIcons.setIcon( 'access' , 'close' ,[ 143 ]) -- to close access to 143
 	
 ## change log
 
+	1.2.5	- icons can now be disabled/enabled via enableIcon which functions like setIcon
+
 	1.2.4	- bugfix in evented icons: $apply() was not high enough on the call stack
 
 	1.2.3	- bugfix in radio class handling, brings clicked & evented icons to parity
