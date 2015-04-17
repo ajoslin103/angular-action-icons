@@ -216,7 +216,7 @@ If you give it an eventHandler it will call it with the event and the promise
 
 ## set them
 
-Add an data-entity-type to your action icon sets -- this action will NOT emit actionIconEvents
+Add a data-entity-type to your action icon sets
 
 	<action-icon-set data-entity-type="volume" data-entity-id="42" actions="silent:loud:radio42"/> 
 	<action-icon-set data-entity-type="volume" data-entity-id="142" actions="silent:loud:radio42"/> 
@@ -231,11 +231,22 @@ Call actionIcons.setIcon( 'volume' , 'silent' ,[ 42, 142,242 ]) -- to turn all v
 Call actionIcons.setIcon( 'access' , 'close' ,[ 143 ]) -- to close access to 143
 
 
+## enable/disable them
+
+Add a data-entity-type to your action icon sets
+
+	<action-icon-set data-entity-type="record" data-entity-id="42" actions="trash"/>
+
+Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable the trash icon # 42
+
+
 ## install it
 
 	bower install --save angular-action-icons   
 	
 ## change log
+
+	1.2.6  - bug fix to enable/disable
 
 	1.2.5	- icons can now be disabled/enabled via enableIcon which functions like setIcon
 
