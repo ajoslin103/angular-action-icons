@@ -475,7 +475,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 
 function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon single-state-icon {{family}} {{className}} {{disabled}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon single-state-icon {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -484,7 +484,8 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconSingleState';
 			scope.controller = myController;
-			scope.clicked = function() { 
+			scope.clicked = function( $event ) { 
+				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 					.then(
@@ -510,7 +511,7 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon cycle-state-icon {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon cycle-state-icon {{family}} {{className}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -519,7 +520,8 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconCycleState';
 			scope.controller = myController;
-			scope.clicked = function() { 
+			scope.clicked = function( $event ) { 
+				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
 					.then(
@@ -546,7 +548,7 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -555,7 +557,8 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioState';
 			scope.controller = myController;
-			scope.clicked = function() { 
+			scope.clicked = function( $event ) { 
+				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				// if we clicked on one that is on 
 				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
@@ -663,7 +666,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked()" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -672,7 +675,8 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioStateOff';
 			scope.controller = myController;
-			scope.clicked = function() { 
+			scope.clicked = function( $event ) { 
+				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				// if any one of these radio-offs [by class] is in motion, 
 				if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {

@@ -246,6 +246,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	
 ## change log
 
+	1.2.7  - stop event propagation after iconClick
+
 	1.2.6  - bug fix to enable/disable
 
 	1.2.5	- icons can now be disabled/enabled via enableIcon which functions like setIcon
