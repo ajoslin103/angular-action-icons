@@ -246,6 +246,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	
 ## change log
 
+	1.3.0  - rewrote event based icon control, removed listenForControl from service interface
+
 	1.2.8  - version bump for readme
 
 	1.2.7  - stop event propagation after iconClick
