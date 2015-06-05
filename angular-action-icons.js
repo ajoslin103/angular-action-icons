@@ -94,9 +94,7 @@ function actionIconServiceFn ($q, $rootScope) {
 			typ: _iconType, 
 			ids: _idList 
 		};
-		setTimeout(function() {
-			$rootScope.$emit(controlEventPrefix()+_iconType,envelope); 
-		}, 1);
+		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope); 
 	}
 
 	// call for icons to be changed
@@ -107,60 +105,7 @@ function actionIconServiceFn ($q, $rootScope) {
 			tag: _iconTag, 
 			ids: _idList 
 		};
-		setTimeout(function() {
-			$rootScope.$emit(controlEventPrefix()+_iconType,envelope); 
-		}, 1);
-	}
-
-	// tell a list of controllers to do things with their icons
-	function SetControlledIcons( controllerArray, envelope ){ 
-		switch (envelope.action) {
-			case 'enabling': {
-				for (var ndx=0; ndx < controllerArray.length; ndx++) {
-					controllerArray[ndx].enableMyIcon(envelope.tagArray,envelope.enable);
-				}
-				break;
-			}
-			case 'tagging': {
-				for (var ndx=0; ndx < controllerArray.length; ndx++) {
-					controllerArray[ndx].setMyIcon(envelope.tag);
-				}
-				break;
-			}
-		}
-	}
-
-	// we listen for requests to change icons
-	var actionIconControls = {};
-	function listenForControl(directiveController){ 
-		var iconControlEvent = directiveController.getIconControlEvent(); 
-		var itemType = directiveController.getItemType();
-		var itemId = directiveController.getItemId();
-		if (! actionIconControls.hasOwnProperty(iconControlEvent)) { // by iconControlEvent
-			actionIconControls[iconControlEvent] = {};
-			actionIconControls[iconControlEvent].itemType = itemType;
-			actionIconControls[iconControlEvent].controllerList = {};
-			actionIconControls[iconControlEvent].listener = $rootScope.$on(iconControlEvent, function(evt,envelope) {
-				if (envelope.ids === '*') {
-					for (var iconNdx in actionIconControls[iconControlEvent].controllerList) {
-						if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(iconNdx)) {
-							SetControlledIcons(actionIconControls[iconControlEvent].controllerList[iconNdx],envelope);  // jshint ignore:line
-						}
-					}
-				} else {
-					for (var ndx=0; ndx<envelope.ids.length; ndx++) {
-						if (actionIconControls[iconControlEvent].controllerList.hasOwnProperty(envelope.ids[ndx])) {
-							SetControlledIcons(actionIconControls[iconControlEvent].controllerList[envelope.ids[ndx]],envelope);  // jshint ignore:line
-						}
-					}
-				}
-				$rootScope.$apply();
-			});
-		}
-		if (! actionIconControls[iconControlEvent].controllerList.hasOwnProperty(itemId)) {
-			actionIconControls[iconControlEvent].controllerList[itemId] = [];
-		}
-		actionIconControls[iconControlEvent].controllerList[itemId].push(directiveController); // and by entityId
+		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope); 
 	}
 
 	// in response to an actionIcon click, emit an event on the rootscope
@@ -349,7 +294,6 @@ function actionIconServiceFn ($q, $rootScope) {
 		iconOnClass: iconOnClass,
 		radiosInMotion: radiosInMotion,
 		logTheResult: logTheResult,
-		listenForControl: listenForControl,
 		setIcon: setIcon,
 		addIconStyles: addIconStyles,
 		removeIconStyles: removeIconStyles,
@@ -390,6 +334,11 @@ function actionIconSetDirectiveFn ($compile, actionIcons) {
 
 function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIcons) { 
 
+	var $listeners = []; // add to these the $on's
+	$scope.$on('$destroy', function() {
+		$listeners.forEach(function(e){ e(); });
+	});
+
 	$scope.enabled = true;
 	
 	$scope.aiIconInfos = {};
@@ -429,6 +378,52 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 		}
 		return '';
 	};
+
+	function iconEventListener ( event, envelope ){ 
+		if ((envelope.ids === '*') || (envelope.ids.indexOf($scope.aiItemId * 1.0) !== -1)) {
+			switch (envelope.action) {
+				case 'enabling': {
+					if (envelope.tagArray.indexOf($scope.label) !== -1) {
+						$scope.enabled = envelope.enable;
+						if ($scope.enabled) {
+							$scope.disabled = '';
+						} else {
+							$scope.disabled = 'disabled';
+						}
+					}
+					break;
+				}
+				case 'tagging': {
+					var allegedTag = envelope.tag;
+					if (isFinite(envelope.tag)) { 
+						allegedTag = $scope.aiIconTagList[envelope.tag];
+					}
+					if ($scope.aiIconInfos.hasOwnProperty((allegedTag))) {
+						$scope.clas = '';
+						if ($scope.aiIconType.indexOf('Radio') !== -1) {
+							if ($scope.aiIconTagList.length > (actionIcons.iconOnClass)) {
+								if ($scope.aiIconTagList.indexOf(allegedTag) === actionIcons.iconOnNdx) {
+									$scope.clas = $scope.aiIconTagList[actionIcons.iconOnClass];
+								}
+							}
+						}
+						$scope.label = allegedTag;
+						$scope.aiCurrentTag = allegedTag;
+						$scope.name = $scope.aiIconInfos[allegedTag].name;
+						$scope.title = $scope.aiIconInfos[allegedTag].title;
+						$scope.event = $scope.aiIconInfos[allegedTag].event;
+						$scope.family = $scope.aiIconInfos[allegedTag].family;
+						$scope.className = $scope.aiIconInfos[allegedTag].family +'-'+ $scope.aiIconInfos[allegedTag].name;
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	// $listeners.push(
+		$scope.$on(actionIcons.controlEventPrefix()+$scope.aiItemType,iconEventListener);
+	// );
 
 	this.setMyIcon = function(allegedTagOrNdx){ // jshint ignore:line
 		var allegedTag = allegedTagOrNdx;
@@ -480,7 +475,7 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 	return {
 		restrict: 'EA',
 		scope: {},
-		controller: actionIconDirectiveControllerFn,
+		controller: 'actionIconDirectiveCtrl',
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconSingleState';
 			scope.controller = myController;
@@ -504,7 +499,6 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 			var compiled = $compile(el);
 			element.html(el);
 			compiled(scope);
-			actionIcons.listenForControl(myController);
 		}
 	};
 }
@@ -516,7 +510,7 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 	return {
 		restrict: 'EA',
 		scope: {},
-		controller: actionIconDirectiveControllerFn,
+		controller: 'actionIconDirectiveCtrl',
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconCycleState';
 			scope.controller = myController;
@@ -541,7 +535,6 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 			var compiled = $compile(el);
 			element.html(el);
 			compiled(scope);
-			actionIcons.listenForControl(myController);
 		}
 	};
 }
@@ -553,7 +546,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 	return {
 		restrict: 'EA',
 		scope: {},
-		controller: actionIconDirectiveControllerFn,
+		controller: 'actionIconDirectiveCtrl',
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioState';
 			scope.controller = myController;
@@ -659,7 +652,6 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 			var compiled = $compile(el);
 			element.html(el);
 			compiled(scope);
-			actionIcons.listenForControl(myController);
 		}
 	};
 }
@@ -671,7 +663,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 	return {
 		restrict: 'EA',
 		scope: {},
-		controller: actionIconDirectiveControllerFn,
+		controller: 'actionIconDirectiveCtrl',
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioStateOff';
 			scope.controller = myController;
@@ -771,7 +763,6 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 			var compiled = $compile(el);
 			element.html(el);
 			compiled(scope);
-			actionIcons.listenForControl(myController);
 		}
 	};
 }
