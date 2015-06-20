@@ -69,7 +69,7 @@ ask the angularActionIcons service actionIcons to call it
 
 ## want more ?
 
-there are four kinds of action icons
+there are six kinds of action icons
 
 ###action-icon-single-state : one click, one icon
 
@@ -107,9 +107,10 @@ there are four kinds of action icons
 	<action-icon-set data-entity-id="42" actions="zmIn>zmOut"/> 
 
 
-###action-icon-radio-state : only one in a group can be on at a time
+###action-icon-radio-state : only one in a group can be on at a time, events: off then on
+###action-icon-alt-radio-state : only one in a group can be on at a time, events: on then off
 
-#####Note: the 'off' event will fire, and must resolve before the 'on' event will fire
+#####Note: the first event will fire, and must resolve before the second event will fire
 #####Note: the icon will only change if/when the pertinent events resolve
 
 	$scope.icons = {
@@ -129,10 +130,14 @@ there are four kinds of action icons
 	
 	// the 1st one is the default, use the delim: : -- pass a unique class so we can find the group
 	<action-icon-set data-entity-id="42" actions="silent:loud:radio42"/> 
+	
+	// the 1st one is the default, use the ALT delim: # -- pass a unique class so we can find the group
+	<action-icon-set data-entity-id="42" actions="silent#loud#radio42"/> 
 
-###action-icon-radio-off-state : only one can be on, and you can turn that one off
+###action-icon-radio-off-state : only one can be on, and you can turn that one off, events: off then on
+###action-icon-alt-radio-off-state : only one can be on, and you can turn that one off, events: on then off
 
-#####Note: the 'off' event will fire, and must resolve before the 'on' event will fire
+#####Note: the first event will fire, and must resolve before the second event will fire
 #####Note: the icon will only change if/when the pertinent events resolve
 
 	$scope.icons = {
@@ -152,6 +157,9 @@ there are four kinds of action icons
 	
 	// the 1st one is the default, use the delim: ; -- pass a unique class so we can find the group
 	<action-icon-set data-entity-id="42" actions="close;open;radio42"/> 
+	
+	// the 1st one is the default, use the ALT delim: % -- pass a unique class so we can find the group
+	<action-icon-set data-entity-id="42" actions="close%open%radio42"/> 
 
 
 ## mix and match
@@ -245,6 +253,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	bower install --save angular-action-icons   
 	
 ## change log
+
+	1.3.1  - added ALT versions of the Radio and RadioOff icons, these turn ON the new one before turning OFF the old one
 
 	1.3.0  - rewrote event based icon control, removed listenForControl from service interface
 
