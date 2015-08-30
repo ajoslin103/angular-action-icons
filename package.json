@@ -1,6 +1,6 @@
 {
   "name": "angular-action-icons",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "AngularJS action icons directive that sends click events to your code as promises",
   "main": "angular-action-icons.js",
   "scripts": {

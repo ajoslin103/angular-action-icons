@@ -254,6 +254,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	
 ## change log
 
+	1.3.2  - dynamically determine the icon data-item-id to cover those cases where the icon id changes after it's interpolated
+
 	1.3.1  - added ALT versions of the Radio and RadioOff icons, these turn ON the new one before turning OFF the old one
 
 	1.3.0  - rewrote event based icon control, removed listenForControl from service interface

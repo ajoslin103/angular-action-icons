@@ -376,7 +376,6 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 	$scope.enabled = true;
 	
 	$scope.aiIconInfos = {};
-	$scope.aiItemId = $element.attr('data-item-id');
 	$scope.aiItemType = $element.attr('data-item-type'); 
 	$scope.aiItemClump = $element.attr('data-icon'); 
 	$scope.aiIconTagList = $scope.aiItemClump.split(actionIcons.getIconDelimRegEx());
@@ -496,7 +495,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 	};
 
 	this.getItemId = function(){ // jshint ignore:line
-		return $scope.aiItemId;
+		return $element.attr('data-item-id');
 	};
 
 	this.setMyIcon(actionIcons.iconOffNdx); // jshint ignore:line
@@ -516,16 +515,16 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 			scope.clicked = function( $event ) { 
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
+				actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 					.then(
 						function(data){ // resolved, action was successful
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
+							actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 						},
 						function(err){ // rejected, action was NOT successful
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
+							actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 						},
 						function(msg){ // notification, action had something to say
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
+							actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 						}
 					);
 			};
@@ -551,17 +550,17 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 			scope.clicked = function( $event ) { 
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				actionIcons.emitActionIconEvent(scope.event,attrs.itemId)
+				actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 					.then(
 						function(data){ // resolved, action was successful
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'success data: '+(data || '[none returned]'));
+							actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 							myController.setNextIcon();
 						},
 						function(err){ // rejected, action was NOT successful
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'failed error: '+(err || '[none reported]'));
+							actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 						},
 						function(msg){ // notification, action had something to say
-							actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,attrs.itemId),'notification: '+msg);
+							actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 						}
 					);
 			};
@@ -590,12 +589,12 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 				// if we clicked on one that is on 
 				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
 					// then bail - you can't turn off a radio icon
-					actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
+					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, you cannot turn off a radio icon [use a radio-off icon]');
 				} else {
 					// if any one of these radios [by class] is in motion, 
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 						// then bail
-						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, already processing an event for this group');
+						actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
 					} else {
 						// set up a blocker while we process this click, we don't want any interleaved actions
 						actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]] = new Date().getTime();
@@ -604,31 +603,31 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 						if (theOn.length) {
 							// and try to turn it off
 							var theOnScope = angular.element(theOn[0]).scope();
-							actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.aiItemId)
+							actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.controller.getItemId())
 								.then(
 									function(data){ // resolved, action was successful
-										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
+										actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(data || '[none returned]'));
 										// so change to the off icon
 										theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 										// if the one we turned off is not the one we want to turn on
-										if (theOnScope.aiItemId !== scope.aiItemId) {
+										if (theOnScope.aiItemId !== scope.controller.getItemId()) {
 											// then turn on the one they clicked on
-											actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+											actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 												.then(
 													function(data){ // resolved, action was successful
-														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+														actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 														// change to the on icon
 														myController.setMyIcon(actionIcons.iconOnNdx);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 													},
 													function(err){ // rejected, action was NOT successful
-														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+														actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 													},
 													function(msg){ // notification, action had something to say
-														actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+														actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 														// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 														delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 													}
@@ -642,12 +641,12 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 									},
 									function(err){ // rejected, action was NOT successful
-										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'failed error: '+(err || '[none reported]'));
+										actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(err || '[none reported]'));
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 									},
 									function(msg){ // notification, action had something to say
-										actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'notification: '+msg);
+										actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */msg);
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 									}
@@ -657,22 +656,22 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 							} else { 
 
 								// then turn on the one they clicked on
-								actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+								actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 									.then(
 										function(data){ // resolved, action was successful
-											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+											actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 											// change to the on icon
 											myController.setMyIcon(actionIcons.iconOnNdx);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 										},
 										function(err){ // rejected, action was NOT successful
-											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+											actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 										},
 										function(msg){ // notification, action had something to say
-											actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+											actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 										}
@@ -707,7 +706,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 				// if any one of these radio-offs [by class] is in motion, 
 				if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 					// then bail
-					actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, already processing an event for this group');
+					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
 				} else {
 					// set up a blocker while we process this click, we don't want any interleaved actions
 					actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]] = new Date().getTime();
@@ -716,31 +715,31 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 					if (theOn.length) {
 						// and try to turn it off
 						var theOnScope = angular.element(theOn[0]).scope();
-						actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.aiItemId)
+						actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.controller.getItemId())
 							.then(
 								function(data){ // resolved, action was successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(data || '[none returned]'));
 									// so change to the off icon
 									theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 									// if the one we turned off is not the one we want to turn on
-									if (theOnScope.aiItemId !== scope.aiItemId) {
+									if (theOnScope.aiItemId !== scope.controller.getItemId()) {
 										// then turn on the one they clicked on
-										actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+										actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 											.then(
 												function(data){ // resolved, action was successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 													// change to the on icon
 													myController.setMyIcon(actionIcons.iconOnNdx);
 													// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 													delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 												},
 												function(err){ // rejected, action was NOT successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+													actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 													// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 													delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 												},
 												function(msg){ // notification, action had something to say
-													actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 													// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 													delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 												}
@@ -754,12 +753,12 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 
 								},
 								function(err){ // rejected, action was NOT successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'failed error: '+(err || '[none reported]'));
+									actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(err || '[none reported]'));
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								},
 								function(msg){ // notification, action had something to say
-									actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'notification: '+msg);
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */msg);
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								}
@@ -769,22 +768,22 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 						} else { 
 
 							// then turn on the one they clicked on
-							actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+							actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 								.then(
 									function(data){ // resolved, action was successful
-										actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+										actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 										// change to the on icon
 										myController.setMyIcon(actionIcons.iconOnNdx);
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 									},
 									function(err){ // rejected, action was NOT successful
-										actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+										actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 									},
 									function(msg){ // notification, action had something to say
-										actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+										actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 									}
@@ -819,21 +818,21 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 				// if we clicked on one that is on 
 				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
 					// then bail - you can't turn off a radio icon
-					actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, you cannot turn off a radio icon [use a radio-off icon]');
+					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, you cannot turn off a radio icon [use a radio-off icon]');
 				} else {
 					// if any one of these radios [by class] is in motion, 
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 						// then bail
-						actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, already processing an event for this group');
+						actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
 					} else {
 						// set up a blocker while we process this click, we don't want any interleaved actions
 						actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]] = new Date().getTime();
 
 						// turn on the one they clicked on
-						actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+						actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 							.then(
 								function(data){ // resolved, action was successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 									// change to the on icon
 									myController.setMyIcon(actionIcons.iconOnNdx);
 
@@ -842,18 +841,18 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 									if (theOn.length) {
 										// and try to turn it off
 										var theOnScope = angular.element(theOn[0]).scope();
-										actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.aiItemId)
+										actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.controller.getItemId())
 											.then(
 												function(data){ // resolved, action was successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(data || '[none returned]'));
 													// so change to the off icon
 													theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 												},
 												function(err){ // rejected, action was NOT successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'failed error: '+(err || '[none reported]'));
+													actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(err || '[none reported]'));
 												},
 												function(msg){ // notification, action had something to say
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'notification: '+msg);
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */msg);
 												}
 											);
 										}
@@ -862,12 +861,12 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								},
 								function(err){ // rejected, action was NOT successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+									actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								},
 								function(msg){ // notification, action had something to say
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								}
@@ -902,7 +901,7 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 				// if any one of these radio-offs [by class] is in motion, 
 				if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 					// then bail
-					actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'discarded, already processing an event for this group');
+					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
 				} else {
 					// set up a blocker while we process this click, we don't want any interleaved actions
 					actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]] = new Date().getTime();
@@ -910,27 +909,27 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 					// if we clicked on one that is on 
 					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
 
-						actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+						actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 							.then(
 								function(data){ // resolved, action was successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 									// so change to the off icon
 									scope.controller.setMyIcon(actionIcons.iconOffNdx);
 								},
 								function(err){ // rejected, action was NOT successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+									actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 								},
 								function(msg){ // notification, action had something to say
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 								}
 							);
 					}  else {
 
 						// turn on the one they clicked on
-						actionIcons.emitActionIconEvent(scope.event,scope.aiItemId)
+						actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 							.then(
 								function(data){ // resolved, action was successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'success data: '+(data || '[none returned]'));
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(data || '[none returned]'));
 									// change to the on icon
 									myController.setMyIcon(actionIcons.iconOnNdx);
 
@@ -939,18 +938,18 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 									if (theOn.length) {
 										// and try to turn it off
 										var theOnScope = angular.element(theOn[0]).scope();
-										actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.aiItemId)
+										actionIcons.emitActionIconEvent(theOnScope.event,theOnScope.controller.getItemId())
 											.then(
 												function(data){ // resolved, action was successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'success data: '+(data || '[none returned]'));
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(data || '[none returned]'));
 													// so change to the off icon
 													theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 												},
 												function(err){ // rejected, action was NOT successful
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'failed error: '+(err || '[none reported]'));
+													actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */(err || '[none reported]'));
 												},
 												function(msg){ // notification, action had something to say
-													actionIcons.logTheResult(actionIcons.nameTheIcon(theOnScope.event,theOnScope.aiItemId),'notification: '+msg);
+													actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(theOnScope.event,theOnScope.controller.getItemId())+' '+ */msg);
 												}
 											);
 										}
@@ -959,12 +958,12 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								},
 								function(err){ // rejected, action was NOT successful
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'failed error: '+(err || '[none reported]'));
+									actionIcons.logTheResult('warn',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */(err || '[none reported]'));
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								},
 								function(msg){ // notification, action had something to say
-									actionIcons.logTheResult(actionIcons.nameTheIcon(scope.event,scope.aiItemId),'notification: '+msg);
+									actionIcons.logTheResult('info',/* actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' '+ */msg);
 									// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 									delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
 								}
