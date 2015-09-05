@@ -413,7 +413,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 	};
 
 	function iconEventListener ( event, envelope ){ 
-		if ((envelope.ids === '*') || (envelope.ids.indexOf($scope.aiItemId * 1.0) !== -1)) {
+		if ((envelope.ids === '*') || (envelope.ids.indexOf($scope.controller.getItemId() * 1.0) !== -1)) {
 			switch (envelope.action) {
 				case 'enabling': {
 					if (envelope.tagArray.indexOf($scope.label) !== -1) {
@@ -610,7 +610,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 										// so change to the off icon
 										theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 										// if the one we turned off is not the one we want to turn on
-										if (theOnScope.aiItemId !== scope.controller.getItemId()) {
+										if (theOnScope.controller.getItemId() !== scope.controller.getItemId()) {
 											// then turn on the one they clicked on
 											actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 												.then(
@@ -722,7 +722,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 									// so change to the off icon
 									theOnScope.controller.setMyIcon(actionIcons.iconOffNdx);
 									// if the one we turned off is not the one we want to turn on
-									if (theOnScope.aiItemId !== scope.controller.getItemId()) {
+									if (theOnScope.controller.getItemId() !== scope.controller.getItemId()) {
 										// then turn on the one they clicked on
 										actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 											.then(
