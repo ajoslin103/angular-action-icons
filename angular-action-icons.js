@@ -374,6 +374,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 	});
 
 	$scope.enabled = true;
+	$scope.disabled = '';
 	
 	$scope.aiIconInfos = {};
 	$scope.aiItemType = $element.attr('data-item-type'); 
@@ -538,7 +539,7 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon cycle-state-icon {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon cycle-state-icon {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -574,7 +575,7 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -691,7 +692,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
 function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -803,7 +804,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 // the ALT versions turn on the new one before turning off the old one
 function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
@@ -886,7 +887,7 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 // the ALT versions turn on the new one before turning off the old one
 function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) {
 
-	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}}"/>';
+	var tmpl = '<span ng-click="clicked($event)" title="{{title}}" class="action-icon radio-state-icon {{clas}} {{family}} {{className}} {{disabled}}"/>';
 
 	return {
 		restrict: 'EA',
