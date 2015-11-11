@@ -994,3 +994,4 @@ angular.module('angularActionIcons', [])
 	.directive('actionIconAltRadioOffState', [ '$compile', '$rootScope', 'actionIcons', actionIconAltRadioStateOffDirectiveFn ])
 	.controller('actionIconDirectiveCtrl', actionIconDirectiveControllerFn)
 	;
+

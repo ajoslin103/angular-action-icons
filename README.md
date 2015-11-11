@@ -261,7 +261,7 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	
 ## change log
 
-	2.0.2	- moved storage of icon data from the local $scope to the actionIcons service -- this is an easy fix for your code, but it is a breaking change.
+	2.0.3	- moved storage of icon data from the local $scope to the actionIcons service -- this is an easy fix for your code, but it is a breaking change.
 	So prior to version 2.x use $scope.icons to store the icon data
 	And from version 2.0 on use actionIcons.icons (and don't intialize it)
 
