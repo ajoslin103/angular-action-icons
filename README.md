@@ -15,8 +15,9 @@ use an actionIconSet
 	<action-icon-set data-entity-id="42" actions="trash"/>
 	
 set an icons dataStructure into your scope
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		trash: {
 			name: 'trash',				// the icon name
 			event: 'item.delete',		// namespace your events
@@ -26,6 +27,7 @@ set an icons dataStructure into your scope
 	}
 
 tell the angularActionIcons service actionIcons service about any icons you want to track
+NOTE: you can of course catch these events locally, just don't make this call.
 
 	actionIcons.listenToTheseActionIcons($scope.icons);
 
@@ -72,8 +74,9 @@ ask the angularActionIcons service actionIcons to call it
 there are six kinds of action icons
 
 ###action-icon-single-state : one click, one icon
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		trash: {
 			name: 'trash',
 			event: 'item.delete', // namespace your events
@@ -87,8 +90,9 @@ there are six kinds of action icons
 ###action-icon-cycle-state : each click advances thru the group
 
 #####Note: the icon will only advance if/when the event resolves
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		zmIn: {
 			name: 'zoom-in',
 			event: 'item.zoomIn', // namespace your events
@@ -112,8 +116,9 @@ there are six kinds of action icons
 
 #####Note: the first event will fire, and must resolve before the second event will fire
 #####Note: the icon will only change if/when the pertinent events resolve
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		silent: {
 			name: 'volume-off',
 			event: 'item.mute', // namespace your events
@@ -139,8 +144,9 @@ there are six kinds of action icons
 
 #####Note: the first event will fire, and must resolve before the second event will fire
 #####Note: the icon will only change if/when the pertinent events resolve
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		close: {
 			name: 'eye-close',
 			event: 'item.write', // namespace your events
@@ -165,8 +171,9 @@ there are six kinds of action icons
 ## mix and match
 
 Use them however you want
+NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
-	$scope.icons = {
+	angularIcons.icons = {
 		trash: {
 			name: 'trash',
 			event: 'item.delete', // namespace your events
@@ -253,6 +260,10 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	bower install --save angular-action-icons   
 	
 ## change log
+
+	2.0	- moved storage of icon data from the local $scope to the actionIcons service -- this is an easy fix for your code, but it is a breaking change.
+	So prior to version 2.x use $scope.icons to store the icon data
+	And from version 2.0 on use actionIcons.icons (and don't intialize it)
 
 	1.3.3  - bugfix to dynamically determined data-item-ids
 

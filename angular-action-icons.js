@@ -347,7 +347,7 @@ function actionIconSetDirectiveFn ($compile, actionIcons) {
 				radioAltDelim = new RegExp(actionIcons.getAltRadioDelim()),
 				radioAltOffDelim = new RegExp(actionIcons.getAltRadioOffDelim()),
 				groups = attrs.actions.split(actionIcons.getGroupDelim());
-			scope.icons = scope.$parent.icons;
+			scope.icons = actionIcons.icons;
 			for (var x=0; x<groups.length; x++) {
 				var eType = 'action-icon-single-state';
 				if ( cycleDelim.test(groups[x]) ) { eType = 'action-icon-cycle-state'; }
@@ -383,7 +383,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 
 	for (var ndx = 0; ndx < $scope.aiIconTagList.length; ndx++) {
 		var eachTag = $scope.aiIconTagList[ndx];
-		$scope.aiIconInfos[eachTag] = $scope.$parent.icons[eachTag];
+		$scope.aiIconInfos[eachTag] = actionIcons.icons[eachTag];
 	}
 
 	this.setNextIcon = function(){ // jshint ignore:line
