@@ -299,6 +299,7 @@ function actionIconServiceFn ($q, $rootScope) {
 	// add our icon styles
 	addIconStyles();
 
+	var iconDefs = {};
 
 	return {
 		registerActionIconEventHandler: registerActionIconEventHandler,
@@ -330,6 +331,7 @@ function actionIconServiceFn ($q, $rootScope) {
 		enableIcon: enableIcon,
 		controlEventPrefix: controlEventPrefix,
 		getIconDelimRegEx: getIconDelimRegEx,
+		icons: iconDefs,
 	};
 	
 }
