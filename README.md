@@ -1,6 +1,6 @@
 # angular-action-icons
 
-AngularJS action icons directive that sends click events to your code as promises 
+AngularJS action icons directive that sends click events to your code as promises
 
 (See the end of this Read Me for the change log)
 
@@ -10,10 +10,10 @@ add 'angularActionIcons' as dependency to your app
 
 inject the service 'actionIcons' where you need it
 
-use an actionIconSet 
+use an actionIconSet
 
 	<action-icon-set data-entity-id="42" actions="trash"/>
-	
+
 set an icons dataStructure into your scope
 NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 
@@ -54,7 +54,7 @@ ask the angularActionIcons service actionIcons to call it
 watch the console when you click on it
 
 	delete item #42 success data: entityAdmin resolved:delete item #42
-	
+
 ## watch it
 
 add your own promise logging so that you can keep track of interal results
@@ -106,9 +106,9 @@ NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 			family: 'glyphicon'
 		}
 	}
-	
+
 	// the 1st one is the default, use the delim: > -- use as many icons as you want
-	<action-icon-set data-entity-id="42" actions="zmIn>zmOut"/> 
+	<action-icon-set data-entity-id="42" actions="zmIn>zmOut"/>
 
 
 ###action-icon-radio-state : only one in a group can be on at a time, events: off then on
@@ -132,12 +132,12 @@ NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 			family: 'glyphicon'
 		}
 	}
-	
+
 	// the 1st one is the default, use the delim: : -- pass a unique class so we can find the group
-	<action-icon-set data-entity-id="42" actions="silent:loud:radio42"/> 
-	
+	<action-icon-set data-entity-id="42" actions="silent:loud:radio42"/>
+
 	// the 1st one is the default, use the ALT delim: # -- pass a unique class so we can find the group
-	<action-icon-set data-entity-id="42" actions="silent#loud#radio42"/> 
+	<action-icon-set data-entity-id="42" actions="silent#loud#radio42"/>
 
 ###action-icon-radio-off-state : only one can be on, and you can turn that one off, events: off then on
 ###action-icon-alt-radio-off-state : only one can be on, and you can turn that one off, events: on then off
@@ -160,12 +160,12 @@ NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 			family: 'glyphicon'
 		}
 	}
-	
+
 	// the 1st one is the default, use the delim: ; -- pass a unique class so we can find the group
-	<action-icon-set data-entity-id="42" actions="close;open;radio42"/> 
-	
+	<action-icon-set data-entity-id="42" actions="close;open;radio42"/>
+
 	// the 1st one is the default, use the ALT delim: % -- pass a unique class so we can find the group
-	<action-icon-set data-entity-id="42" actions="close%open%radio42"/> 
+	<action-icon-set data-entity-id="42" actions="close%open%radio42"/>
 
 
 ## mix and match
@@ -217,9 +217,9 @@ NOTE: prior to version 2.x use $scope.icons instead of actionIcons.icons
 			family: 'glyphicon'
 		}
 	}
-	
+
 	// use a comma to delim between icon groups
-	<action-icon-set data-entity-id="42" actions="trash,zmIn>zmOut,silent:loud:radio42,close;open;radio43"/> 
+	<action-icon-set data-entity-id="42" actions="trash,zmIn>zmOut,silent:loud:radio42,close;open;radio43"/>
 
 ## understand it
 
@@ -233,13 +233,13 @@ If you give it an eventHandler it will call it with the event and the promise
 
 Add a data-entity-type to your action icon sets
 
-	<action-icon-set data-entity-type="volume" data-entity-id="42" actions="silent:loud:radio42"/> 
-	<action-icon-set data-entity-type="volume" data-entity-id="142" actions="silent:loud:radio42"/> 
-	<action-icon-set data-entity-type="volume" data-entity-id="242" actions="silent:loud:radio42"/> 
+	<action-icon-set data-entity-type="volume" data-entity-id="42" actions="silent:loud:radio42"/>
+	<action-icon-set data-entity-type="volume" data-entity-id="142" actions="silent:loud:radio42"/>
+	<action-icon-set data-entity-type="volume" data-entity-id="242" actions="silent:loud:radio42"/>
 
-	<action-icon-set data-entity-type="access" data-entity-id="43" actions="close;open;radio43"/> 
-	<action-icon-set data-entity-type="access" data-entity-id="143" actions="close;open;radio43"/> 
-	<action-icon-set data-entity-type="access" data-entity-id="243" actions="close;open;radio43"/> 
+	<action-icon-set data-entity-type="access" data-entity-id="43" actions="close;open;radio43"/>
+	<action-icon-set data-entity-type="access" data-entity-id="143" actions="close;open;radio43"/>
+	<action-icon-set data-entity-type="access" data-entity-id="243" actions="close;open;radio43"/>
 
 Call actionIcons.setIcon( 'volume' , 'silent' ,[ 42, 142,242 ]) -- to turn all volume's to silent
 
@@ -258,8 +258,10 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 ## install it
 
 	bower install --save angular-action-icons   
-	
+
 ## change log
+
+	2.0.4	- added modifier keys to actionIcons object -- you can query it for: altKey, ctrlKey & shiftKey
 
 	2.0.3	- moved storage of icon data from the local $scope to the actionIcons service -- this is an easy fix for your code, but it is a breaking change.
 	So prior to version 2.x use $scope.icons to store the icon data
@@ -284,8 +286,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 	1.2.4	- bugfix in evented icons: $apply() was not high enough on the call stack
 
 	1.2.3	- bugfix in radio class handling, brings clicked & evented icons to parity
-	
-	1.2.2	- bugfix in evented setMyIcon to show icon changes 
+
+	1.2.2	- bugfix in evented setMyIcon to show icon changes
 
 	1.2.1	- bugfix in radio icon logic
 
