@@ -261,6 +261,8 @@ Call actionIcons.enableIcon( 'record' , 'trash', false ,[ 42 ]) -- to disable th
 
 ## change log
 
+	2.0.5	- bugfix (hadn't included the frikkin' code!)
+
 	2.0.4	- added modifier keys to actionIcons object -- you can query it for: altKey, ctrlKey & shiftKey
 
 	2.0.3	- moved storage of icon data from the local $scope to the actionIcons service -- this is an easy fix for your code, but it is a breaking change.

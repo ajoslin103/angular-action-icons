@@ -72,49 +72,53 @@ function actionIconServiceFn ($q, $rootScope) {
 	/*
 		eventing
 
-		to be able to emit user specified events on click -- 
-			we will send your iconInfo.event & data-entity-id in the   
+		to be able to emit user specified events on click --
+			we will send your iconInfo.event & data-entity-id in the
 			as .event & .id in the promise with your iconInfo.event as the emitted 'event'
 			this is done automatically via: emitActionIconEvent
 
 		to be able to ask for icon changes via: setIcon(entityType,desiredIconTag,[iconIds])
-			you will request iconInfo.tag be applied to all icons 
+			you will request iconInfo.tag be applied to all icons
 			identified by data-entity-type and an array of ids
-			-- we will only set those icons that are valid for 
+			-- we will only set those icons that are valid for
 				the icons found (no action can result in a blank icon)
 
 	*/
 
+	var altKey = false;
+	var ctrlKey = false;
+	var shiftKey = false;
+
 	// call for icons to be enabled/disabled
 	function enableIcon (_iconType, _iconTagArray, _enabled, _idList) {
-		var envelope = { 
-			tagArray: _iconTagArray, 
+		var envelope = {
+			tagArray: _iconTagArray,
 			action: 'enabling',
-			enable: _enabled, 
-			typ: _iconType, 
-			ids: _idList 
+			enable: _enabled,
+			typ: _iconType,
+			ids: _idList
 		};
-		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope); 
+		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope);
 	}
 
 	// call for icons to be changed
 	function setIcon (_iconType, _iconTag, _idList) {
-		var envelope = { 
+		var envelope = {
 			action: 'tagging',
-			typ: _iconType, 
-			tag: _iconTag, 
-			ids: _idList 
+			typ: _iconType,
+			tag: _iconTag,
+			ids: _idList
 		};
-		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope); 
+		$rootScope.$broadcast(controlEventPrefix()+_iconType,envelope);
 	}
 
 	// in response to an actionIcon click, emit an event on the rootscope
-	function emitActionIconEvent(evt,id) { 
+	function emitActionIconEvent(evt,id) {
 		var deferred = $q.defer();
 		deferred.event = evt;
 		deferred.id = id;
 		setTimeout(function() {
-			$rootScope.$emit(evt,deferred); 
+			$rootScope.$emit(evt,deferred);
 		}, 1);
 		return deferred.promise;
 	}
@@ -125,7 +129,7 @@ function actionIconServiceFn ($q, $rootScope) {
 	// dynamically add a style rule to the page
 	function injectStyles(rule,id) {
 		angular.element('<div />', { html: '&shy;<style id="'+id+'">' + rule + '</style>' })
-			.appendTo('body');    
+			.appendTo('body');
 	}
 
 	// remove our styles
@@ -137,19 +141,19 @@ function actionIconServiceFn ($q, $rootScope) {
 	// add our styles, only once
 	function addIconStyles(){
 		if (! angular.element('#actionIconHoverStyle').length) {
-			if ((typeof document.body.style.filter !== 'undefined') && 
+			if ((typeof document.body.style.filter !== 'undefined') &&
 				(typeof document.body.style.webkitFilter !== 'undefined')) {
-				injectStyles('.action-icon:hover { filter: invert(100%); -webkit-filter: invert(100%); }','actionIconHoverStyle'); 
+				injectStyles('.action-icon:hover { filter: invert(100%); -webkit-filter: invert(100%); }','actionIconHoverStyle');
 			} else {
-				injectStyles('.action-icon:hover { color: white; background-color: black; }','actionIconHoverStyle'); 
+				injectStyles('.action-icon:hover { color: white; background-color: black; }','actionIconHoverStyle');
 			}
 		}
 		if (! angular.element('#actionIconDisabledStyle').length) {
-			if ((typeof document.body.style.filter !== 'undefined') && 
+			if ((typeof document.body.style.filter !== 'undefined') &&
 				(typeof document.body.style.webkitFilter !== 'undefined')) {
-				injectStyles('.action-icon.disabled { filter: invert(100%); -webkit-filter: invert(100%) !important; }','actionIconDisabledStyle'); 
+				injectStyles('.action-icon.disabled { filter: invert(100%); -webkit-filter: invert(100%) !important; }','actionIconDisabledStyle');
 			} else {
-				injectStyles('.action-icon:disabled { color: white; background-color: black !important; }','actionIconDisabledStyle'); 
+				injectStyles('.action-icon:disabled { color: white; background-color: black !important; }','actionIconDisabledStyle');
 			}
 		}
 	}
@@ -333,7 +337,7 @@ function actionIconServiceFn ($q, $rootScope) {
 		getIconDelimRegEx: getIconDelimRegEx,
 		icons: iconDefs,
 	};
-	
+
 }
 
 function actionIconSetDirectiveFn ($compile, actionIcons) {
@@ -342,7 +346,7 @@ function actionIconSetDirectiveFn ($compile, actionIcons) {
 		restrict: 'E',
 		scope: {},
 		link: function postLink(scope, element, attrs) {
-			var actionables = [], 
+			var actionables = [],
 				cycleDelim = new RegExp(actionIcons.getCycleDelim()),
 				radioDelim = new RegExp(actionIcons.getRadioDelim()),
 				radioOffDelim = new RegExp(actionIcons.getRadioOffDelim()),
@@ -368,7 +372,7 @@ function actionIconSetDirectiveFn ($compile, actionIcons) {
 	};
 }
 
-function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIcons) { 
+function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIcons) {
 
 	var $listeners = []; // add to these the $on's
 	$scope.$on('$destroy', function() {
@@ -377,10 +381,10 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 
 	$scope.enabled = true;
 	$scope.disabled = '';
-	
+
 	$scope.aiIconInfos = {};
-	$scope.aiItemType = $element.attr('data-item-type'); 
-	$scope.aiItemClump = $element.attr('data-icon'); 
+	$scope.aiItemType = $element.attr('data-item-type');
+	$scope.aiItemClump = $element.attr('data-icon');
 	$scope.aiIconTagList = $scope.aiItemClump.split(actionIcons.getIconDelimRegEx());
 
 	for (var ndx = 0; ndx < $scope.aiIconTagList.length; ndx++) {
@@ -415,7 +419,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 		return '';
 	};
 
-	function iconEventListener ( event, envelope ){ 
+	function iconEventListener ( event, envelope ){
 		if ((envelope.ids === '*') || (envelope.ids.indexOf($scope.controller.getItemId() * 1.0) !== -1)) {
 			switch (envelope.action) {
 				case 'enabling': {
@@ -431,7 +435,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 				}
 				case 'tagging': {
 					var allegedTag = envelope.tag;
-					if (isFinite(envelope.tag)) { 
+					if (isFinite(envelope.tag)) {
 						allegedTag = $scope.aiIconTagList[envelope.tag];
 					}
 					if ($scope.aiIconInfos.hasOwnProperty((allegedTag))) {
@@ -463,7 +467,7 @@ function actionIconDirectiveControllerFn ($scope, $element, $rootScope, actionIc
 
 	this.setMyIcon = function(allegedTagOrNdx){ // jshint ignore:line
 		var allegedTag = allegedTagOrNdx;
-		if (isFinite(allegedTagOrNdx)) { 
+		if (isFinite(allegedTagOrNdx)) {
 			allegedTag = $scope.aiIconTagList[allegedTagOrNdx];
 		}
 		if ($scope.aiIconInfos.hasOwnProperty((allegedTag))) {
@@ -515,7 +519,10 @@ function actionIconSingleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconSingleState';
 			scope.controller = myController;
-			scope.clicked = function( $event ) { 
+			scope.clicked = function( $event ) {
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
@@ -550,7 +557,10 @@ function actionIconCycleStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconCycleState';
 			scope.controller = myController;
-			scope.clicked = function( $event ) { 
+			scope.clicked = function( $event ) {
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
 				actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
@@ -586,15 +596,18 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioState';
 			scope.controller = myController;
-			scope.clicked = function( $event ) { 
+			scope.clicked = function( $event ) {
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				// if we clicked on one that is on 
-				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
+				// if we clicked on one that is on
+				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) {
 					// then bail - you can't turn off a radio icon
 					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, you cannot turn off a radio icon [use a radio-off icon]');
 				} else {
-					// if any one of these radios [by class] is in motion, 
+					// if any one of these radios [by class] is in motion,
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 						// then bail
 						actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
@@ -636,7 +649,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 													}
 												);
 
-										// we were only turning one off 
+										// we were only turning one off
 										} else {
 											// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 											delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
@@ -656,7 +669,7 @@ function actionIconRadioStateDirectiveFn ($compile, $rootScope, actionIcons) {
 								);
 
 							// otherwise there was no other icon in the On state
-							} else { 
+							} else {
 
 								// then turn on the one they clicked on
 								actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
@@ -703,10 +716,13 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconRadioStateOff';
 			scope.controller = myController;
-			scope.clicked = function( $event ) { 
+			scope.clicked = function( $event ) {
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				// if any one of these radio-offs [by class] is in motion, 
+				// if any one of these radio-offs [by class] is in motion,
 				if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 					// then bail
 					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
@@ -748,7 +764,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 												}
 											);
 
-									// we were only turning one off 
+									// we were only turning one off
 									} else {
 										// remove the blocker, we are done processing this click - (.finally has requirements our user might not meet.)
 										delete actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]];
@@ -768,7 +784,7 @@ function actionIconRadioStateOffDirectiveFn ($compile, $rootScope, actionIcons) 
 							);
 
 						// otherwise there was no other icon in the On state
-						} else { 
+						} else {
 
 							// then turn on the one they clicked on
 							actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
@@ -816,14 +832,17 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 			scope.aiIconType = 'actionIconAltRadioState';
 			scope.controller = myController;
 			scope.clicked = function( $event ) { 
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				// if we clicked on one that is on 
-				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
+				// if we clicked on one that is on
+				if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) {
 					// then bail - you can't turn off a radio icon
 					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, you cannot turn off a radio icon [use a radio-off icon]');
 				} else {
-					// if any one of these radios [by class] is in motion, 
+					// if any one of these radios [by class] is in motion,
 					if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 						// then bail
 						actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
@@ -839,7 +858,7 @@ function actionIconAltRadioStateDirectiveFn ($compile, $rootScope, actionIcons) 
 									// change to the on icon
 									myController.setMyIcon(actionIcons.iconOnNdx);
 
-									// find the previously 'on' one 
+									// find the previously 'on' one
 									var theOn = document.getElementsByClassName(scope.aiIconTagList[actionIcons.iconOnClass]);
 									if (theOn.length) {
 										// and try to turn it off
@@ -898,10 +917,13 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 		link: function postLink(scope, element, attrs, myController) {
 			scope.aiIconType = 'actionIconAltRadioStateOff';
 			scope.controller = myController;
-			scope.clicked = function( $event ) { 
+			scope.clicked = function( $event ) {
+				actionIcons.altKey = $event.altKey;
+				actionIcons.ctrlKey = $event.ctrlKey;
+				actionIcons.shiftKey = $event.shiftKey;
 				$event.stopPropagation();
 				if (! scope.enabled) { return; }
-				// if any one of these radio-offs [by class] is in motion, 
+				// if any one of these radio-offs [by class] is in motion,
 				if (actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]]) {
 					// then bail
 					actionIcons.logTheResult('info',actionIcons.nameTheIcon(scope.event,scope.controller.getItemId())+' discarded, already processing an event for this group');
@@ -909,8 +931,8 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 					// set up a blocker while we process this click, we don't want any interleaved actions
 					actionIcons.radiosInMotion[scope.aiIconTagList[actionIcons.iconOnClass]] = new Date().getTime();
 
-					// if we clicked on one that is on 
-					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) { 
+					// if we clicked on one that is on
+					if (scope.aiIconTagList.indexOf(scope.aiCurrentTag) === actionIcons.iconOnNdx) {
 
 						actionIcons.emitActionIconEvent(scope.event,scope.controller.getItemId())
 							.then(
@@ -936,7 +958,7 @@ function actionIconAltRadioStateOffDirectiveFn ($compile, $rootScope, actionIcon
 									// change to the on icon
 									myController.setMyIcon(actionIcons.iconOnNdx);
 
-									// find the previously 'on' one 
+									// find the previously 'on' one
 									var theOn = document.getElementsByClassName(scope.aiIconTagList[actionIcons.iconOnClass]);
 									if (theOn.length) {
 										// and try to turn it off
@@ -994,4 +1016,3 @@ angular.module('angularActionIcons', [])
 	.directive('actionIconAltRadioOffState', [ '$compile', '$rootScope', 'actionIcons', actionIconAltRadioStateOffDirectiveFn ])
 	.controller('actionIconDirectiveCtrl', actionIconDirectiveControllerFn)
 	;
-
